@@ -2,5 +2,10 @@ fastapi
 uvicorn
 supabase
 python-dotenv
+pydantic[email]
+pydantic-settings
+asyncpg
 psycopg2-binary # For direct PostgreSQL connection
 sqlalchemy      # (Optional) For ORM/migration support
+alembic
+python-jose[cryptography]
