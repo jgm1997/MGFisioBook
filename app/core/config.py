@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     supabase_publishable_key: str
     supabase_secret_key: str
     database_url: str
+    smtp_user: str
+    smtp_password: str
 
     class Config:
         env_file = ".env"

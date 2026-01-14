@@ -9,3 +9,4 @@ psycopg2-binary # For direct PostgreSQL connection
 sqlalchemy      # (Optional) For ORM/migration support
 alembic
 python-jose[cryptography]
+aiosmtplib
