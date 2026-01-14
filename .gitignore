@@ -103,3 +103,6 @@ env.bak
 Thumbs.db
 ehthumbs.db
 Icon
+
+# Firebase
+firebase-service-account.json

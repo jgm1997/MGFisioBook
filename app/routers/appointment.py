@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -32,6 +32,7 @@ router = APIRouter()
 @router.post("/", response_model=AppointmentPublic)
 async def book_appointment(
     data: AppointmentCreate,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
     user=Depends(require_role("patient")),
 ):
@@ -39,7 +40,7 @@ async def book_appointment(
     if not patient:
         raise HTTPException(status_code=404, detail="Patient profile not found")
 
-    appt = await create_appointment(db, patient.id, data)
+    appt = await create_appointment(db, patient.id, data, background_tasks)
     return appt
 
 

@@ -10,3 +10,5 @@ sqlalchemy      # (Optional) For ORM/migration support
 alembic
 python-jose[cryptography]
 aiosmtplib
+jinja2
+firebase-admin

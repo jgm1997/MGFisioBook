@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 from uuid import UUID
 
-from fastapi import HTTPException
+from fastapi import BackgroundTasks, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,6 +10,8 @@ from app.models.appointment import Appointment, AppointmentStatus
 from app.models.therapist_availability import TherapistAvailability
 from app.models.treatment import Treatment
 from app.schemas.appointment import AppointmentCreate, AppointmentUpdate
+from app.services.email_notification_service import send_appointment
+from app.services.push_notification_service import send_push_to_user
 
 
 async def __has_conflict(
@@ -41,7 +43,10 @@ async def __is_within_availability(
 
 
 async def create_appointment(
-    db: AsyncSession, patient_id: UUID, data: AppointmentCreate
+    db: AsyncSession,
+    patient_id: UUID,
+    data: AppointmentCreate,
+    background_tasks: BackgroundTasks,
 ) -> Appointment:
     query = select(Treatment).where(Treatment.id == data.treatment_id)
     result = await db.execute(query)
@@ -74,6 +79,24 @@ async def create_appointment(
     db.add(appointment)
     await db.commit()
     await db.refresh(appointment)
+
+    background_tasks.add_task(
+        send_appointment,
+        "confirmation",
+        patient=appointment.patient,
+        therapist=appointment.therapist,
+        treatment=appointment.treatment,
+        appointment=appointment,
+    )
+
+    background_tasks.add_task(
+        send_push_to_user,
+        db,
+        appointment.patient_id,
+        "Cita confirmada",
+        f"Tu cita para {treatment.name} el {start.strftime('%Y-%m-%d %H:%M')} ha sido confirmada.",
+    )
+
     return appointment
 
 
