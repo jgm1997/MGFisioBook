@@ -1,12 +1,13 @@
 from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.security import require_role
 from app.schemas.patient import PatientCreate, PatientPublic
-from app.services.patient_service import create_patient, get_patient, list_patients
-
+from app.services.patient_service import (create_patient, get_patient,
+                                          list_patients)
 
 router = APIRouter()
 

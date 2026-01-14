@@ -1,5 +1,7 @@
 import uuid
+
 from sqlalchemy import UUID, Column, String, Text
+
 from app.models.base import Base
 
 
