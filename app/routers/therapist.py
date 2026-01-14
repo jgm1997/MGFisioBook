@@ -6,8 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.security import require_role
 from app.schemas.therapist import TherapistCreate, TherapistPublic
-from app.services.therapist_service import (create_therapist, get_therapist,
-                                            list_therapists)
+from app.services.therapist_service import (
+    create_therapist,
+    get_therapist,
+    list_therapists,
+)
 
 router = APIRouter()
 
