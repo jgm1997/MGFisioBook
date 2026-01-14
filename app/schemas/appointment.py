@@ -9,7 +9,6 @@ class AppointmentBase(BaseModel):
     therapist_id: UUID
     treatment_id: UUID
     start_time: datetime
-    end_time: datetime
     notes: Optional[str] = None
 
 

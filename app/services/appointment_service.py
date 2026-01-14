@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 from uuid import UUID
 
@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.appointment import Appointment, AppointmentStatus
 from app.models.therapist_availability import TherapistAvailability
+from app.models.treatment import Treatment
 from app.schemas.appointment import AppointmentCreate, AppointmentUpdate
 
 
@@ -42,14 +43,21 @@ async def __is_within_availability(
 async def create_appointment(
     db: AsyncSession, patient_id: UUID, data: AppointmentCreate
 ) -> Appointment:
-    if not await __is_within_availability(
-        db, data.therapist_id, data.start_time, data.end_time
-    ):
+    query = select(Treatment).where(Treatment.id == data.treatment_id)
+    result = await db.execute(query)
+    treatment = result.scalar_one_or_none()
+    if not treatment:
+        raise HTTPException(status_code=404, detail="Treatment not found.")
+
+    start = data.start_time
+    end = start + timedelta(minutes=treatment.duration_minutes)
+
+    if not await __is_within_availability(db, data.therapist_id, start, end):
         raise HTTPException(
             status_code=400, detail="Therapist not available at this time."
         )
 
-    if await __has_conflict(db, data.therapist_id, data.start_time, data.end_time):
+    if await __has_conflict(db, data.therapist_id, start, end):
         raise HTTPException(
             status_code=400, detail="Appointment conflicts with existing booking."
         )
@@ -58,8 +66,8 @@ async def create_appointment(
         patient_id=patient_id,
         therapist_id=data.therapist_id,
         treatment_id=data.treatment_id,
-        start_time=data.start_time,
-        end_time=data.end_time,
+        start_time=start,
+        end_time=end,
         notes=data.notes,
     )
 
