@@ -57,6 +57,21 @@ Run the included tests with `pytest`:
 pytest -q
 ```
 
+Testing notes:
+
+- Tests use an async in-memory SQLite database by default. To use a different test database (for example Postgres), set the `TEST_DATABASE_URL` environment variable before running tests, e.g.:
+
+```bash
+export TEST_DATABASE_URL="postgresql+asyncpg://user:pass@localhost/testdb"
+pytest -q
+```
+
+- The test suite provides fixtures in `tests/conftest.py` that override the application's `get_db` dependency so tests run against the test database.
+
+Integration testing note:
+
+- Some integration tests hit the running FastAPI app and expect the test database to be accessible from both the test fixtures and the `TestClient`. Using the default in-memory SQLite may cause schema visibility issues across connections. For reliable integration tests, set `TEST_DATABASE_URL` to a file-based SQLite (`sqlite+aiosqlite:////full/path/to/tests/test_db.sqlite`) or a Postgres test database before running tests.
+
 ## Database
 
 The project uses SQLAlchemy models in `app/models` and Alembic for migrations. See `alembic.ini` and `migrations/` for migration configuration.

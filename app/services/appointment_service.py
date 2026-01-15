@@ -24,7 +24,7 @@ async def __has_conflict(
         Appointment.status == AppointmentStatus.scheduled,
     )
     result = await db.execute(query)
-    return result.scalar_one_or_none() is not None
+    return result.scalars().first() is not None
 
 
 async def __is_within_availability(
@@ -39,7 +39,7 @@ async def __is_within_availability(
         TherapistAvailability.end_time >= end.time(),
     )
     result = await db.execute(query)
-    return result.scalar_one_or_none() is not None
+    return result.scalars().first() is not None
 
 
 async def create_appointment(
