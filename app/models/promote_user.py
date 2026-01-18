@@ -1,6 +1,7 @@
-from proto import Field
-from pydantic import BaseModel
+from typing import Literal
+
+from pydantic import BaseModel, Field
 
 
 class PromoteUserRequest(BaseModel):
-    role: str = Field(..., regex="^(therapist|admin)$")
+    role: Literal["therapist", "admin"] = Field(...)

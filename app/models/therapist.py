@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Boolean, Column, ForeignKey, String
+from sqlalchemy import Boolean, Column, String
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.models.base import Base
@@ -15,6 +15,4 @@ class Therapist(Base):
     phone = Column(String, nullable=True)
     email = Column(String, nullable=True, unique=True)
     active = Column(Boolean, default=True)
-    supabase_user_id = Column(
-        UUID(as_uuid=True), ForeignKey("auth.users.id"), unique=True, nullable=False
-    )
+    supabase_user_id = Column(UUID(as_uuid=True), unique=True, nullable=False)

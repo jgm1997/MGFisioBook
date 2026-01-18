@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import (
+    admin,
     appointment,
     auth,
     availability,
@@ -22,6 +23,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(admin.router, prefix="/admin", tags=["admin"])
 app.include_router(patient.router, prefix="/patients", tags=["patients"])
 app.include_router(therapist.router, prefix="/therapists", tags=["therapists"])
 app.include_router(appointment.router, prefix="/appointments", tags=["appointments"])
