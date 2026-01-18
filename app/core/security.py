@@ -37,14 +37,6 @@ def _fetch_jwks() -> Dict[str, Any]:
         return jwks
 
 
-def _find_jwk(kid: str) -> Dict[str, Any]:
-    jwks = _fetch_jwks()
-    for key in jwks.get("keys", []):
-        if key.get("kid") == kid:
-            return key
-    raise KeyError(f"JWK with kid={kid} not found")
-
-
 def _base64url_to_int(val: str) -> int:
     # Add padding if necessary
     val_padded = val + "=" * (-len(val) % 4)
