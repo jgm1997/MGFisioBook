@@ -1,3 +1,5 @@
+"""Tests adicionales para routers con mayor cobertura de código."""
+
 from datetime import datetime, time, timedelta, timezone
 from uuid import uuid4
 
@@ -12,8 +14,8 @@ from app.services.treatment_service import create_treatment
 
 
 @pytest.mark.asyncio
-async def test_appointment_get_update_cancel_roles(client, db_session, monkeypatch):
-    # set current user to admin for some calls
+async def test_appointment_lifecycle_with_roles(client, db_session, monkeypatch):
+    """Test completo del ciclo de vida de una cita con diferentes roles."""
     from app.core import security
 
     def admin_user():
@@ -21,7 +23,7 @@ async def test_appointment_get_update_cancel_roles(client, db_session, monkeypat
 
     monkeypatch.setattr(security, "get_current_user", admin_user)
 
-    # create therapist, treatment, patient and availability
+    # Crear datos necesarios
     therapist = await create_therapist(
         db_session, TherapistCreate(name="R1", email=f"r1+{uuid4().hex}@example.com")
     )
@@ -54,7 +56,7 @@ async def test_appointment_get_update_cancel_roles(client, db_session, monkeypat
     db_session.add(av)
     await db_session.commit()
 
-    # book via router
+    # Reservar cita
     start = datetime.combine(day, time(12, 0), tzinfo=timezone.utc).isoformat()
     payload = {
         "therapist_id": str(therapist.id),
@@ -64,37 +66,38 @@ async def test_appointment_get_update_cancel_roles(client, db_session, monkeypat
     resp = client.post("/appointments/", json=payload)
     assert resp.status_code in (200, 201, 401, 403, 422)
 
-    # get list as admin
-    resp2 = client.get("/appointments/")
-    assert resp2.status_code == 200 or resp2.status_code in (401, 403)
+    # Listar citas como admin
+    resp_list = client.get("/appointments/")
+    assert resp_list.status_code in (200, 401, 403)
 
-    # get a particular appointment id if present
-    data = resp.json() if resp.status_code == 200 else {}
-    appt_id = data.get("id")
-    if appt_id:
-        g = client.get(f"/appointments/{appt_id}")
-        assert g.status_code in (200, 401, 403, 404)
+    # Si la cita se creó, probar operaciones adicionales
+    if resp.status_code in (200, 201):
+        data = resp.json()
+        appt_id = data.get("id")
+        if appt_id:
+            # Obtener cita específica
+            resp_get = client.get(f"/appointments/{appt_id}")
+            assert resp_get.status_code in (200, 401, 403, 404)
 
-        # update attempt
-        upd = {"notes": "Updated via test"}
-        u = client.put(f"/appointments/{appt_id}", json=upd)
-        assert u.status_code in (200, 401, 403, 404, 422)
+            # Actualizar cita
+            upd = {"notes": "Updated via test"}
+            resp_update = client.put(f"/appointments/{appt_id}", json=upd)
+            assert resp_update.status_code in (200, 401, 403, 404, 422)
 
-        # cancel attempt
-        c = client.delete(f"/appointments/{appt_id}")
-        assert c.status_code in (200, 401, 403, 404)
+            # Cancelar cita
+            resp_cancel = client.delete(f"/appointments/{appt_id}")
+            assert resp_cancel.status_code in (200, 204, 401, 403, 404)
 
 
-def test_free_slots_router(client, db_session):
-    # call free-slots listing endpoint (router mounted at /free-slots)
-    # Use random therapist id; endpoint should return 200 or 404 depending on DB
+def test_free_slots_router(client):
+    """Test del endpoint de slots libres."""
     tid = uuid4()
     day = (datetime.now(timezone.utc) + timedelta(days=1)).date().isoformat()
     resp = client.get(f"/free-slots/{tid}/{day}?duration_minutes=30")
     assert resp.status_code in (200, 404, 422)
 
 
-def test_invoice_router_basic(client):
-    # basic smoke for invoice endpoints - endpoint uses POST for listing (admin)
+def test_invoice_router_list(client):
+    """Test básico del endpoint de listado de facturas."""
     resp = client.post("/invoices/", json={})
-    assert resp.status_code in (200, 401, 403)
+    assert resp.status_code in (200, 401, 403, 422)

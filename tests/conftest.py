@@ -3,35 +3,34 @@ import os
 import sys
 from pathlib import Path
 
-import pytest
-import pytest_asyncio
-from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
-
-from app.main import app
-from app.models.base import Base
-
-# Ensure project root is on sys.path for imports
+# CRÍTICO: Establecer variables de entorno ANTES de cualquier importación de la app
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-# Provide minimal environment variables required by app.core.config.Settings
-os.environ.setdefault("SUPABASE_URL", "https://example.supabase.co")
-os.environ.setdefault("SUPABASE_PUBLISHABLE_KEY", "pubkey")
-os.environ.setdefault("SUPABASE_SECRET_KEY", "secretkey")
-os.environ.setdefault("SMTP_USER", "test@example.com")
-os.environ.setdefault("SMTP_PASSWORD", "password")
-
-# Use a file-based SQLite DB for tests and make sure the app uses it
+# Use a file-based SQLite DB for tests
 TEST_DB_PATH = ROOT / "tests" / "test_db.sqlite"
-test_db_url = f"sqlite+aiosqlite:///{TEST_DB_PATH}"
-os.environ.setdefault("TEST_DATABASE_URL", test_db_url)
-# Set DATABASE_URL env used by application import
-os.environ.setdefault("DATABASE_URL", os.environ.get("TEST_DATABASE_URL"))
+DATABASE_URL = f"sqlite+aiosqlite:///{TEST_DB_PATH}"
 
+# Establecer TODAS las variables de entorno necesarias ANTES de importar la app
+os.environ["SUPABASE_URL"] = "https://example.supabase.co"
+os.environ["SUPABASE_PUBLISHABLE_KEY"] = "pubkey"
+os.environ["SUPABASE_SECRET_KEY"] = "secretkey"
+os.environ["SMTP_USER"] = "test@example.com"
+os.environ["SMTP_PASSWORD"] = "password"
+os.environ["SMTP_HOST"] = "smtp.gmail.com"
+os.environ["SMTP_PORT"] = "587"
+os.environ["DATABASE_URL"] = DATABASE_URL
+os.environ["TEST_DATABASE_URL"] = DATABASE_URL
 
-DATABASE_URL = os.environ.get("TEST_DATABASE_URL")
+# AHORA sí importar después de configurar las variables de entorno
+import pytest  # noqa: E402
+import pytest_asyncio  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine  # noqa: E402
+from sqlalchemy.orm import sessionmaker  # noqa: E402
+
+from app.main import app  # noqa: E402
+from app.models.base import Base  # noqa: E402
 
 
 @pytest.fixture(scope="session")

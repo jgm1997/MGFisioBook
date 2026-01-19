@@ -12,3 +12,6 @@ python-jose[cryptography]
 aiosmtplib
 jinja2
 firebase-admin
+aiosqlite       # For async SQLite tests
+pytest
+pytest-asyncio

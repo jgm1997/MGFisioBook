@@ -1,0 +1,139 @@
+╔════════════════════════════════════════════════════════════════╗
+║           RESUMEN DE CAMBIOS - CI/CD Y TESTS                  ║
+╚════════════════════════════════════════════════════════════════╝
+
+📦 ARCHIVOS NUEVOS CREADOS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ .github/workflows/ci.yml
+   → Pipeline CI/CD completo con test, lint y docker
+
+✨ .github/workflows/README.md
+   → Documentación del CI/CD
+
+✨ tests/test_appointments_comprehensive.py
+   → Tests consolidados de citas (7 tests)
+
+✨ tests/test_invoices_comprehensive.py
+   → Tests consolidados de facturas (6 tests)
+
+✨ tests/README.md
+   → Documentación completa de tests
+
+✨ .env.example
+   → Template de variables de entorno
+
+✨ setup.sh
+   → Script de instalación automática
+
+✨ Makefile
+   → Comandos útiles para desarrollo
+
+✨ README.md (actualizado)
+   → Documentación completa del proyecto
+
+✨ CHANGELOG_CICD.md
+   → Este resumen detallado
+
+📝 ARCHIVOS MODIFICADOS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ requirements.txt
+   + aiosqlite, pytest, pytest-asyncio
+
+✅ tests/test_smoke.py
+   Mejorado con más validaciones
+
+✅ tests/test_patient_router.py
+   Añadido test de listado
+
+✅ tests/test_patient_service.py
+   Mejor cobertura de casos
+
+✅ tests/test_availability_service.py
+   Tests más específicos
+
+✅ tests/test_routers_more_coverage.py
+   Consolidado y mejorado
+
+🗑️  ARCHIVOS ELIMINADOS (Redundantes):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ test_appointment_router_edges.py
+❌ test_appointment_router_roles.py
+❌ test_routers_appointments_and_device_token.py
+❌ test_routers_appointments_and_invoices_extra.py
+❌ test_invoice_router_more.py
+
+📊 ESTADÍSTICAS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Tests antes:        16 archivos
+Tests después:      11 archivos
+Reducción:          -31% (menos duplicación)
+
+Nuevos tests:       13 tests consolidados
+Cobertura:          Mantenida o mejorada
+Documentación:      +4 archivos de docs
+
+🚀 FUNCIONALIDADES DEL CI/CD:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Tests automáticos en cada PR
+✓ Reporte de cobertura de código
+✓ Verificación de formato (black)
+✓ Verificación de imports (isort)
+✓ Análisis estático (flake8)
+✓ Build de Docker (solo en main)
+✓ Compatible con Codecov
+
+📋 COMANDOS ÚTILES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Setup inicial
+./setup.sh
+
+# Ver todos los comandos
+make help
+
+# Ejecutar tests
+make test
+
+# Tests con cobertura
+make test-cov
+
+# Verificar código
+make lint
+
+# Formatear código
+make format
+
+# Levantar con Docker
+make docker-up
+
+# Ver logs
+make docker-logs
+
+🎯 BENEFICIOS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Menos código duplicado
+✓ Tests más organizados y coherentes
+✓ CI/CD automatizado
+✓ Mejor developer experience
+✓ Documentación completa
+✓ Facilita onboarding de nuevos devs
+✓ Detección temprana de bugs
+✓ Calidad de código asegurada
+
+📚 DOCUMENTACIÓN:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+→ README.md                       (Principal)
+→ tests/README.md                 (Tests)
+→ .github/workflows/README.md     (CI/CD)
+→ CHANGELOG_CICD.md               (Cambios detallados)
+
+════════════════════════════════════════════════════════════════════
+                    ¡TODO LISTO PARA USAR! 🎉
+════════════════════════════════════════════════════════════════════

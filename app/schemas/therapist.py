@@ -13,7 +13,7 @@ class TherapistBase(BaseModel):
 
 
 class TherapistCreate(TherapistBase):
-    pass
+    supabase_user_id: Optional[UUID] = None
 
 
 class TherapistUpdate(TherapistBase):
@@ -26,6 +26,4 @@ class TherapistUpdate(TherapistBase):
 
 class TherapistPublic(TherapistBase):
     id: UUID
-
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}

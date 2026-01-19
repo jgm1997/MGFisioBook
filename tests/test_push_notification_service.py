@@ -45,14 +45,14 @@ async def test_send_push_with_tokens(db_session, monkeypatch):
             first_name="PN",
             last_name="U",
             email=f"p+{uuid4().hex}@example.com",
-            supabase_user_id=uuid4().hex,
+            supabase_user_id=uuid4(),
         ),
     )
 
     # insert a device token directly
     from app.models.device_token import DeviceToken
 
-    dt = DeviceToken(user_id=patient.supabase_user_id, token=uuid4().hex)
+    dt = DeviceToken(user_id=str(patient.supabase_user_id), token=uuid4().hex)
     db_session.add(dt)
     await db_session.commit()
 
@@ -77,5 +77,5 @@ async def test_send_push_with_tokens(db_session, monkeypatch):
         "app.services.push_notification_service.messaging", FakeMessaging
     )
 
-    await send_push_to_user(db_session, patient.supabase_user_id, "Title", "Body")
+    await send_push_to_user(db_session, str(patient.supabase_user_id), "Title", "Body")
     assert called["sent"] is True

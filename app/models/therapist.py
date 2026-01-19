@@ -15,4 +15,4 @@ class Therapist(Base):
     phone = Column(String, nullable=True)
     email = Column(String, nullable=True, unique=True)
     active = Column(Boolean, default=True)
-    supabase_user_id = Column(UUID(as_uuid=True), unique=True, nullable=False)
+    supabase_user_id = Column(UUID(as_uuid=True), unique=True, nullable=True)

@@ -27,6 +27,4 @@ class AppointmentPublic(AppointmentBase):
     id: UUID
     patient_id: UUID
     status: str
-
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}

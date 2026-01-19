@@ -24,6 +24,4 @@ class TreatmentUpdate(TreatmentBase):
 
 class TreatmentPublic(TreatmentBase):
     id: UUID
-
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
