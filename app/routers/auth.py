@@ -26,13 +26,14 @@ async def signup(data: SignupRequest, db: AsyncSession = Depends(get_db)):
 
     user = result.user
     token = result.session.access_token
+    role = "patient"
 
     supabase.auth.update_user(
         {
             "data": {
                 "first_name": data.first_name,
                 "last_name": data.last_name,
-                "role": "patient",
+                "role": role,
             }
         }
     )
@@ -49,7 +50,7 @@ async def signup(data: SignupRequest, db: AsyncSession = Depends(get_db)):
         ),
     )
 
-    return TokenResponse(access_token=token)
+    return TokenResponse(access_token=token, role=role)
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -61,7 +62,10 @@ async def login(data: LoginRequest):
     except AuthInvalidCredentialsError:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    return TokenResponse(access_token=result.session.access_token)
+    user_data = supabase.auth.get_user(result.session.access_token)
+    role = user_data.user.user_metadata.get("role", "patient")
+
+    return TokenResponse(access_token=result.session.access_token, role=role)
 
 
 @router.get("/me", response_model=UserInfo)
