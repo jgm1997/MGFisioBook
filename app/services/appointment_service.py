@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Optional
 from uuid import UUID
 
@@ -14,7 +14,8 @@ from app.services.email_notification_service import send_appointment
 from app.services.push_notification_service import send_push_to_user
 
 
-async def __has_conflict(
+@staticmethod
+async def has_conflict(
     db: AsyncSession, therapist_id: UUID, start: datetime, end: datetime
 ) -> bool:
     query = select(Appointment).where(
@@ -27,7 +28,7 @@ async def __has_conflict(
     return result.scalars().first() is not None
 
 
-async def __is_within_availability(
+async def is_within_availability(
     db: AsyncSession, therapist_id: UUID, start: datetime, end: datetime
 ) -> bool:
     weekday = start.strftime("%A").lower()
@@ -57,12 +58,12 @@ async def create_appointment(
     start = data.start_time
     end = start + timedelta(minutes=treatment.duration_minutes)
 
-    if not await __is_within_availability(db, data.therapist_id, start, end):
+    if not await is_within_availability(db, data.therapist_id, start, end):
         raise HTTPException(
             status_code=400, detail="Therapist not available at this time."
         )
 
-    if await __has_conflict(db, data.therapist_id, start, end):
+    if await has_conflict(db, data.therapist_id, start, end):
         raise HTTPException(
             status_code=400, detail="Appointment conflicts with existing booking."
         )
@@ -151,7 +152,7 @@ async def update_appointment(
 
     if new_start != appointment.start_time or new_end != appointment.end_time:
         if (
-            not await __is_within_availability(
+            not await is_within_availability(
                 db, appointment.therapist_id, new_start, new_end
             )
             and not allow_override
@@ -161,7 +162,7 @@ async def update_appointment(
             )
 
         if (
-            await __has_conflict(
+            await has_conflict(
                 db,
                 appointment.therapist_id,
                 new_start,
@@ -187,3 +188,25 @@ async def cancel_appointment(db: AsyncSession, appointment: Appointment) -> Appo
     await db.commit()
     await db.refresh(appointment)
     return appointment
+
+
+@staticmethod
+async def get_daily_availability(db: AsyncSession, therapist_id: UUID, date: date):
+    start = datetime.combine(date, datetime.min.time())
+    end = datetime.combine(date, datetime.max.time())
+
+    slots = []
+    current = start
+    while current < end:
+        next_slot = current + timedelta(minutes=30)
+        conflict = await has_conflict(db, therapist_id, current, next_slot)
+        slots.append(
+            {
+                "start": current,
+                "end": next_slot,
+                "available": not conflict,
+            }
+        )
+        current = next_slot
+
+    return slots

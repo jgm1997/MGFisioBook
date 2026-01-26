@@ -1,3 +1,4 @@
+from datetime import date
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
@@ -6,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
 from app.schemas.availability import AvailabilityCreate, AvailabilityPublic
+from app.services.appointment_service import get_daily_availability
 from app.services.availability_service import (
     create_availability,
     list_therapist_availability,
@@ -15,13 +17,20 @@ from app.services.therapist_service import get_therapist
 router = APIRouter()
 
 
-@router.post("/", response_model=AvailabilityPublic)
+@router.post("", response_model=AvailabilityPublic)
 async def create_availability_endpoint(
     data: AvailabilityCreate,
     db: AsyncSession = Depends(get_db),
     user=Depends(require_role("therapist")),
 ):
     return await create_availability(db, user["id"], data)
+
+
+@router.get("")
+async def get_availability(
+    date: date, therapist_id: UUID, db: AsyncSession = Depends(get_db)
+):
+    return await get_daily_availability(db, therapist_id, date)
 
 
 @router.get("/me", response_model=list[AvailabilityPublic])
