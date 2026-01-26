@@ -10,6 +10,7 @@ from app.schemas.availability import AvailabilityCreate, AvailabilityPublic
 from app.services.appointment_service import get_daily_availability
 from app.services.availability_service import (
     create_availability,
+    delete_availability_slot,
     list_therapist_availability,
 )
 from app.services.therapist_service import get_therapist
@@ -49,3 +50,13 @@ async def get_therapist_availability_public(
     user=Depends(get_current_user),  # any logged-in user can see
 ):
     return await list_therapist_availability(db, therapist_id)
+
+
+@router.delete("/{slot_id}")
+async def delete_availability_slot_endpoint(
+    slot_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    user=Depends(require_role("therapist")),
+):
+    await delete_availability_slot(db, slot_id)
+    return {"detail": "Availability slot deleted"}
