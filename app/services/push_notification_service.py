@@ -2,11 +2,11 @@ from firebase_admin import messaging
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.device_token import DeviceToken
+from app.models.device import Device
 
 
 async def send_push_to_user(db: AsyncSession, user_id: str, title: str, body: str):
-    query = select(DeviceToken).where(DeviceToken.user_id == user_id)
+    query = select(Device).where(Device.supabase_user_id == user_id)
     result = await db.execute(query)
     tokens = [row.token for row in result.scalars().all()]
     if not tokens:
