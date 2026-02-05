@@ -107,3 +107,6 @@ Icon
 
 # Firebase
 firebase-service-account.json
+
+# Vercel
+.vercel

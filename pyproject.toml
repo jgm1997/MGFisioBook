@@ -5,3 +5,39 @@ line_length = 88
 [tool.black]
 line-length = 88
 target-version = ['py312']
+
+
+[project]
+name = "mg-fisio-book"
+version = "0.0.0"
+description = "MG Fisio Book API"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+	"fastapi",
+	"uvicorn",
+	"supabase",
+	"python-dotenv",
+	"pydantic[email]",
+	"pydantic-settings",
+	"asyncpg",
+	"psycopg2-binary",
+	"sqlalchemy",
+	"alembic",
+	"python-jose[cryptography]",
+	"aiosmtplib",
+	"jinja2",
+	"firebase-admin",
+	"aiosqlite",
+	"pytest",
+	"pytest-asyncio",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["app"]
+include = ["app*"]
+exclude = ["migrations*", "tests*"]
