@@ -26,7 +26,11 @@ async def setup_basic_appointment_data(db_session):
     """Helper para crear datos básicos necesarios para las citas."""
     therapist = await create_therapist(
         db_session,
-        TherapistCreate(name="TestTh", email=f"th+{uuid4().hex}@example.com"),
+        TherapistCreate(
+            name="TestTh",
+            email=f"th+{uuid4().hex}@example.com",
+            supabase_user_id=uuid4().hex,
+        ),
     )
     treatment = await create_treatment(
         db_session,
@@ -86,6 +90,7 @@ async def test_list_appointments_by_role(client, db_session):
     """Test listado de citas según el rol del usuario."""
     from app.core import security
     from app.main import app as _app
+    from app.schemas.appointment import AppointmentCreate
     from app.services.appointment_service import create_appointment
 
     therapist, treatment, patient, day = await setup_basic_appointment_data(db_session)
@@ -95,9 +100,7 @@ async def test_list_appointments_by_role(client, db_session):
     await create_appointment(
         db_session,
         patient.id,
-        __import__(
-            "app.schemas.appointment", fromlist=["AppointmentCreate"]
-        ).AppointmentCreate(
+        AppointmentCreate(
             therapist_id=therapist.id,
             treatment_id=treatment.id,
             start_time=start,
@@ -116,7 +119,7 @@ async def test_list_appointments_by_role(client, db_session):
 
     # Test como terapeuta - debe ver sus citas
     def fake_therapist():
-        return {"id": therapist.id, "role": "therapist"}
+        return {"id": therapist.supabase_user_id, "role": "therapist"}
 
     _app.dependency_overrides[security.get_current_user] = fake_therapist
     resp_therapist = client.get("/appointments/")

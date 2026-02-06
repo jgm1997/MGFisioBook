@@ -57,11 +57,13 @@ async def test_treatment_crud(db_session):
 
 @pytest.mark.asyncio
 async def test_therapist_create_and_get(db_session):
-    data = TherapistCreate(name="Dr. Who")
+    data = TherapistCreate(name="Dr. Who", supabase_user_id=uuid4())
     t = await create_therapist(db_session, data)
+    print("Created Therapist:", t.name)
     assert t.id is not None
 
-    fetched = await get_therapist(db_session, t.id)
+    fetched = await get_therapist(db_session, t.supabase_user_id)
+    print("Fetched Therapist:", fetched)
     assert fetched.name == "Dr. Who"
 
 

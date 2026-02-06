@@ -1,6 +1,7 @@
 import asyncio
 import os
 import sys
+import warnings
 from pathlib import Path
 
 # CRÍTICO: Establecer variables de entorno ANTES de cualquier importación de la app
@@ -23,6 +24,15 @@ os.environ["DATABASE_URL"] = DATABASE_URL
 os.environ["TEST_DATABASE_URL"] = DATABASE_URL
 
 # AHORA sí importar después de configurar las variables de entorno
+try:
+    from pyparsing import PyparsingDeprecationWarning
+except Exception:
+    PyparsingDeprecationWarning = DeprecationWarning
+
+warnings.filterwarnings("ignore", category=PyparsingDeprecationWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="pyiceberg.*")
+warnings.filterwarnings("ignore", message=r".*PydanticDeprecated.*")
+
 import pytest  # noqa: E402
 import pytest_asyncio  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
