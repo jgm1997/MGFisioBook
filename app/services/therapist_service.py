@@ -17,7 +17,7 @@ async def create_therapist(db: AsyncSession, data: TherapistCreate):
 
 
 async def get_therapist(db: AsyncSession, id: UUID) -> Optional[Therapist]:
-    query = select(Therapist).where(Therapist.id == id)
+    query = select(Therapist).where(Therapist.supabase_user_id == id)
     result = await db.execute(query)
     return result.scalar_one_or_none()
 
